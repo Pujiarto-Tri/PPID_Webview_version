@@ -20,7 +20,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.content.ContextCompat.getSystemService
 import com.pujiarto.ppidwebview.ui.theme.PpidWebviewTheme
 
 
@@ -92,13 +91,13 @@ fun MainContent(){
                         Environment.DIRECTORY_DOWNLOADS,
                         URLUtil.guessFileName(url, contentDisposition, mimeType)
                     )
-                    val dm = getSystemService(DOWNLOAD_SERVICE) as DownloadManager?
+                    val dm = context.getSystemService(DOWNLOAD_SERVICE) as DownloadManager?
                     dm!!.enqueue(request)
-                    Toast.makeText(
-                        ApplicationProvider.getApplicationContext<Context>(),
-                        "Downloading File",
-                        Toast.LENGTH_LONG
-                    ).show()
+//                    Toast.makeText(
+//                        ApplicationProvider.getApplicationContext<Context>(),
+//                        "Downloading File",
+//                        Toast.LENGTH_LONG
+//                    ).show()
                 })
         }
     }, update = {
