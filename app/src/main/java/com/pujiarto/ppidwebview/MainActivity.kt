@@ -1,7 +1,7 @@
 package com.pujiarto.ppidwebview
 
+import android.annotation.SuppressLint
 import android.app.DownloadManager
-import android.content.Context
 import android.content.Context.DOWNLOAD_SERVICE
 import android.graphics.Bitmap
 import android.net.Uri
@@ -18,26 +18,34 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.pujiarto.ppidwebview.ui.theme.PpidWebviewTheme
-
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             PpidWebviewTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    MainContent()
+                    TopBar()
                 }
             }
         }
     }
+}
+
+@Composable
+fun TopBar(){
+    Scaffold(
+        topBar = { TopAppBar(title = { Text("PPID Lombok Barat", color = Color.White) }, backgroundColor = MaterialTheme.colors.primary) },
+        content = { MainContent() }
+    )
 }
 
 @Composable
@@ -46,7 +54,7 @@ fun MainContent(){
     var backEnabled by remember { mutableStateOf(false)}
     var webView: WebView? = null
 
-    val visibility = remember { mutableStateOf(false)}
+    val visibility = remember { mutableStateOf(true)}
 
     val url = "https://ppid.lombokbaratkab.go.id/"
 
@@ -70,12 +78,13 @@ fun MainContent(){
                     backEnabled = view.canGoBack()
                 }
             }
+                @SuppressLint("SetJavaScriptEnabled")
                 settings.javaScriptEnabled = true
                 loadUrl(url)
                 webView = this
                 visibility.value = false
 
-                webView?.setDownloadListener(DownloadListener { url, userAgent, contentDisposition, mimeType, contentLength ->
+                webView?.setDownloadListener { url, userAgent, contentDisposition, mimeType, _ ->
                     val request = DownloadManager.Request(Uri.parse(url))
                     request.setMimeType(mimeType)
                     //------------------------COOKIE!!------------------------
@@ -85,7 +94,6 @@ fun MainContent(){
                     request.addRequestHeader("User-Agent", userAgent)
                     request.setDescription("Downloading file...")
                     request.setTitle(URLUtil.guessFileName(url, contentDisposition, mimeType))
-                    request.allowScanningByMediaScanner()
                     request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                     request.setDestinationInExternalPublicDir(
                         Environment.DIRECTORY_DOWNLOADS,
@@ -94,12 +102,12 @@ fun MainContent(){
                     val dm = context.getSystemService(DOWNLOAD_SERVICE) as DownloadManager?
                     dm!!.enqueue(request)
 //                    Toast.makeText(
-//                        ApplicationProvider.getApplicationContext<Context>(),
+//                        getApplicationContext(),
 //                        "Downloading File",
 //                        Toast.LENGTH_LONG
 //                    ).show()
-                })
-        }
+                }
+            }
     }, update = {
         webView = it
     })
@@ -110,5 +118,7 @@ fun MainContent(){
 
 
 }
+
+
 
 
