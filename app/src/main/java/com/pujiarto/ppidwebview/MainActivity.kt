@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.view.ViewGroup
 import android.webkit.*
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -99,11 +100,11 @@ fun MainContent(){
                     )
                     val dm = context.getSystemService(DOWNLOAD_SERVICE) as DownloadManager?
                     dm!!.enqueue(request)
-//                    Toast.makeText(
-//                        getApplicationContext(),
-//                        "Downloading File",
-//                        Toast.LENGTH_LONG
-//                    ).show()
+                    Toast.makeText(
+                        context,
+                        "Downloading File",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
     }, update = {
