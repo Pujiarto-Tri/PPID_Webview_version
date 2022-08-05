@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.view.ViewGroup
 import android.webkit.*
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -21,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.pujiarto.ppidwebview.ui.theme.PpidWebviewTheme
 
 class MainActivity : ComponentActivity() {
@@ -33,7 +31,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    TopBar()
+                    Content()
                 }
             }
         }
@@ -41,7 +39,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun TopBar(){
+fun Content(){
     Scaffold(
         topBar = { TopAppBar(title = { Text("PPID Lombok Barat", color = Color.White) }, backgroundColor = MaterialTheme.colors.primary) },
         content = { MainContent() }
@@ -115,7 +113,6 @@ fun MainContent(){
     BackHandler(enabled = backEnabled) {
         webView?.goBack()
     }
-
 
 }
 
