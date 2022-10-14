@@ -3,8 +3,10 @@ package com.pujiarto.ppidwebview
 import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.Context.DOWNLOAD_SERVICE
+import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.view.ViewGroup
@@ -13,6 +15,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -20,6 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.pujiarto.ppidwebview.ui.theme.PpidWebviewTheme
 
 class MainActivity : ComponentActivity() {
@@ -40,6 +45,9 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Content(){
+    var isRefreshing by remember { mutableStateOf(false) }
+    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing)
+
     Scaffold(
         topBar = { TopAppBar(
             title = {
@@ -49,7 +57,14 @@ fun Content(){
                 ) },
             backgroundColor = MaterialTheme.colors.primary,
         ) },
-        content = { MainContent() }
+        content = { it.apply {  }
+            SwipeRefresh(
+                state = swipeRefreshState,
+                onRefresh = { isRefreshing = true },
+            ) {
+                MainContent()
+            }
+        }
     )
 }
 
@@ -69,7 +84,7 @@ fun MainContent(){
                     .fillMaxWidth()
                     .height(4.dp),
                 color = MaterialTheme.colors.primary,
-                backgroundColor = Color.Gray
+                backgroundColor = Color.Gray,
                 )
         }
         AndroidView(
@@ -87,6 +102,29 @@ fun MainContent(){
                         }
                         override fun onPageFinished(view: WebView?, url: String?) {
                             visibility.value = false
+                        }
+                        //for older android api version <24
+                        @Deprecated("Deprecated in Java")
+                        override fun shouldOverrideUrlLoading(view: WebView?, url: String): Boolean {
+                            if (url.startsWith("tel:") || url.startsWith("whatsapp:")) {
+                                val intent = Intent(Intent.ACTION_VIEW)
+                                intent.data = Uri.parse(url)
+                                context.startActivity(intent)
+                                return true
+                            }
+                            return false
+                        }
+                        //for android api version >24
+                        @RequiresApi(Build.VERSION_CODES.N)
+                        override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest): Boolean {
+                            val urls = request.url.toString()
+                            if (urls.startsWith("tel:") || urls.startsWith("whatsapp:")) {
+                                val intent = Intent(Intent.ACTION_VIEW)
+                                intent.data = Uri.parse(urls)
+                                context.startActivity(intent)
+                                return true
+                            }
+                            return false
                         }
                     }
                     @SuppressLint("SetJavaScriptEnabled")

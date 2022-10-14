@@ -67,6 +67,7 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.4.0'
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.4.0'
 
-    //accompanist for statusbar color
+    //accompanist
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.17.0"
+    implementation "com.google.accompanist:accompanist-swiperefresh:0.17.0"
 }
